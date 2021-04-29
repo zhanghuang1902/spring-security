@@ -54,4 +54,18 @@ public class LoginController {
     }
 
 
+    @RequestMapping("/adminTest")
+    @ResponseBody
+    @PreAuthorize("hasPermission('/admin','r')")
+    public String printAdminR() {
+        return "如果你看见这句话，说明你访问/admin路径具有r权限";
+    }
+
+    @RequestMapping("/adminTest/c")
+    @ResponseBody
+    @PreAuthorize("hasPermission('/admin','c')")
+    public String printAdminC() {
+        return "如果你看见这句话，说明你访问/admin路径具有c权限";
+    }
+
 }
