@@ -3,6 +3,7 @@ package com.security.tedu.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,9 +11,11 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
 @Configuration
@@ -27,6 +30,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource;
+
+    @Autowired
+    private CustomAuthenticationProvider customAuthenticationProvider;
+
 
     @Bean
     public PersistentTokenRepository persistentTokenRepository(){
@@ -50,6 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 return s.equals(charSequence.toString());
             }
         });
+       auth.authenticationProvider(customAuthenticationProvider);
     }
 
     @Override
@@ -57,7 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         System.out.println("我到了2");
         http.authorizeRequests()
                 // 如果有允许匿名的url，填在下面
-//                .antMatchers().permitAll()
+                .antMatchers("/getVerifyCode").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 // 设置登陆页
@@ -68,6 +79,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 自定义登陆用户名和密码参数，默认为username和password
 //                .usernameParameter("username")
 //                .passwordParameter("password")
+                // 指定authenticationDetailsSource
+                .authenticationDetailsSource(authenticationDetailsSource)
                 .and()
                 .logout().permitAll()
                 //自动登录
