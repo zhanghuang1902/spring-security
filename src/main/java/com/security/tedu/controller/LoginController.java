@@ -1,7 +1,10 @@
 package com.security.tedu.controller;
 
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,14 +15,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class LoginController {
 
     private Logger logger = LoggerFactory.getLogger(LoginController.class);
 
+//    @Autowired
+//    private RedissonClient redisson;
     @RequestMapping("/")
     public String showHome() {
+//        RLock lock = redisson.getLock("lock");
+//        lock.lock(30, TimeUnit.SECONDS);
+//        lock.unlock();
         //获取当前登录用户：SecurityContextHolder.getContext().getAuthentication()
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         logger.info("当前登陆用户：" + name);
@@ -31,13 +40,13 @@ public class LoginController {
         return "login.html";
     }
 
-    @RequestMapping("/admin")
-    @ResponseBody
-    //@PreAuthorize 用于判断用户是否有指定权限，没有就不能访问
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String printAdmin() {
-        return "如果你看见这句话，说明你有ROLE_ADMIN角色";
-    }
+//    @RequestMapping("/admin")
+//    @ResponseBody
+//    //@PreAuthorize 用于判断用户是否有指定权限，没有就不能访问
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    public String printAdmin() {
+//        return "如果你看见这句话，说明你有ROLE_ADMIN角色";
+//    }
 
     @RequestMapping("/user")
     @ResponseBody
@@ -54,14 +63,14 @@ public class LoginController {
     }
 
 
-    @RequestMapping("/adminTest")
+    @RequestMapping("/admin")
     @ResponseBody
     @PreAuthorize("hasPermission('/admin','r')")
     public String printAdminR() {
         return "如果你看见这句话，说明你访问/admin路径具有r权限";
     }
 
-    @RequestMapping("/adminTest/c")
+    @RequestMapping("/admin/c")
     @ResponseBody
     @PreAuthorize("hasPermission('/admin','c')")
     public String printAdminC() {

@@ -79,7 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         System.out.println("我到了2");
         http.authorizeRequests()
                 // 如果有允许匿名的url，填在下面
-                .antMatchers("/getVerifyCode").permitAll()
+                .antMatchers("/getVerifyCode","/testHutu/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 // 设置登陆页

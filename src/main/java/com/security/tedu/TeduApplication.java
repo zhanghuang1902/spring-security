@@ -1,6 +1,9 @@
 package com.security.tedu;
 
 import com.security.tedu.utils.VerifyServlet;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -23,5 +26,12 @@ public class TeduApplication {
         return registration;
     }
 
+//    @Bean
+//    public RedissonClient redisson(){
+//        Config config = new Config();
+//        config.useSingleServer().setAddress("127.0.0.1:7001");
+//        return Redisson.create(config);
+//
+//    }
 
 }

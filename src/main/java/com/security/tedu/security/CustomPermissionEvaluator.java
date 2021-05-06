@@ -7,11 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 @Component
@@ -22,7 +20,6 @@ public class CustomPermissionEvaluator  implements PermissionEvaluator {
     @Autowired
     private SysRoleService roleService;
 
-
     /**
      * 在 hasPermission() 方法中，参数 1 代表用户的权限身份，参数 2 参数 3 分别和 @PreAuthorize("hasPermission('/admin','r')") 中的参数对应，即访问 url 和权限。
      * @param authentication
@@ -32,12 +29,13 @@ public class CustomPermissionEvaluator  implements PermissionEvaluator {
      */
     @Override
     public boolean hasPermission(Authentication authentication, Object targetUrl, Object targetPermission) {
-        // 获得loadUserByUsername()方法的结果
-        User user = (User)authentication.getPrincipal();
+        Object obj=authentication.getAuthorities();
+        // 获得loadUserByUsername()方法的结果authentication = {UsernamePasswordAuthenticationToken@8559} "UsernamePasswordAuthenticationToken [Principal=admin, Credentials=[PROTECTED], Authenticated=true, Details=CustomWebAuthenticationDetails [RemoteIpAddress=0:0:0:0:0:0:0:1, SessionId=54E4F8DA0828F543AB4EB0B74B648F6F]; VerifyCode: 3by1, Granted Authorities=[ROLE_ADMIN]]"
+        //User user = (User)authentication.getPrincipal();
         // 获得loadUserByUsername()中注入的角色
-        Collection<GrantedAuthority> authorities = user.getAuthorities();
+        //Collection<GrantedAuthority> authorities = user.getAuthorities();
         // 遍历用户所有角色
-        for(GrantedAuthority authority : authorities) {
+        for(GrantedAuthority authority : authentication.getAuthorities()) {
             String roleName = authority.getAuthority();
             Integer roleId = roleService.selectByName(roleName).getId();
             // 得到角色所有的权限
